@@ -66,7 +66,16 @@ class WriteALot implements ActionListener {
 						ObjButtons,ObjButtons[1]);
 				if(PromptResult==0)
 				{
+					try {
+				FileManage.save("testFile", txtarea);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 					System.exit(0);          
+				} else if(PromptResult==1){
+					System.exit(0);
 				}
 			}
 		});
@@ -87,14 +96,6 @@ mnubr.setBounds(5, 0, (frm.getWidth()-5), 50);
 
 	public void actionPerformed(ActionEvent ae) {
 		String act = ae.getActionCommand();
-		if(act =="click"&& (ae.getSource() == fileMenu || ae.getSource()==editMenu)){
-			JPopupMenu pm = new JPopupMenu("Options");
-			pm.add(cutItem);
-			pm.add(saveFile);
-			pm.show(frm,50,50);
-		}
-
-
 		if (ae.getSource() == cutItem) {
 			txtarea.cut();
 		} else if (ae.getSource() == pasteItem) {
