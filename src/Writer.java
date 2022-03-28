@@ -82,7 +82,7 @@ class WriteALot implements ActionListener {
 	
 	public void display(){
 		txtarea.setBounds(0, 50, frm.getWidth(), frm.getHeight());
-mnubr.setBounds(5, 50, (frm.getWidth()-5), 50);
+mnubr.setBounds(5, 0, (frm.getWidth()-5), 50);
 	}
 
 	public void actionPerformed(ActionEvent ae) {
