@@ -40,7 +40,7 @@ class WriteALot implements ActionListener {
 		saveFileAs.addActionListener(this);
 		openFile.addActionListener(this);
 		mnubr = new JMenuBar();
-		mnubr.setBounds(5, 0, (frm.getWidth()-5), 10);
+		mnubr.setBounds(5, 0, (frm.getWidth()-5), 25);
 		fileMenu = new JMenu("File");
 		editMenu = new JMenu("Edit");
 
@@ -61,7 +61,7 @@ class WriteALot implements ActionListener {
 			{ 
 				String ObjButtons[] = {"Yes","No"};
 				int PromptResult = JOptionPane.showOptionDialog(null, 
-						"Are you sure you want to exit?", "Online Examination System", 
+						"Do you want to save changes?", "Online Examination System", 
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
 						ObjButtons,ObjButtons[1]);
 				if(PromptResult==0)
@@ -80,7 +80,7 @@ class WriteALot implements ActionListener {
 			}
 		});
 		txtarea = new JTextArea();
-		txtarea.setBounds(0, 11, frm.getWidth(), frm.getHeight());
+		txtarea.setBounds(0, 25, frm.getWidth(), frm.getHeight());
 		frm.add(mnubr);
 		frm.add(txtarea);
 		frm.setVisible(true);
@@ -90,8 +90,8 @@ class WriteALot implements ActionListener {
 	}
 	
 	public void display(){
-		txtarea.setBounds(0, 50, frm.getWidth(), frm.getHeight());
-mnubr.setBounds(5, 0, (frm.getWidth()-5), 50);
+		txtarea.setBounds(0, 25, frm.getWidth(), frm.getHeight());
+mnubr.setBounds(5, 0, (frm.getWidth()-5), 25);
 	}
 
 	public void actionPerformed(ActionEvent ae) {
@@ -101,7 +101,7 @@ mnubr.setBounds(5, 0, (frm.getWidth()-5), 50);
 		} else if (ae.getSource() == pasteItem) {
 			txtarea.paste();
 		} else if (ae.getSource() == copyItem) {
-			txtarea.copy();
+			txtarea.copy(); 
 		} else if (ae.getSource() == selectAll) {
 			txtarea.selectAll();
 		} else if (ae.getSource() == saveFile) {
@@ -115,23 +115,19 @@ mnubr.setBounds(5, 0, (frm.getWidth()-5), 50);
 		} else if (ae.getSource() == saveFileAs) {
 
 		} else if (ae.getSource() == openFile) {
-
+			try {
+				frm.remove(txtarea);
+				txtarea = FileManage.open("testFile");
+				frm.add(txtarea);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} 
 	}
 
 
-}
-
-class TogMenu extends JMenu implements Toggleable{
-	boolean toggled=false;	
-
-	TogMenu(String s){
-		super(s);
-	}
-
-	public void toggleThis() {
-		this.setVisible((toggled==true)?false:true);	
-	}
 }
 
 abstract class FileManage {
@@ -150,20 +146,24 @@ abstract class FileManage {
 			File f = new File(path.toString());
 		}
 	}
-	public static void saveAs(String nm) throws IOException, FileNotFoundException {
-
+	public static void saveAs(String nm, JTextArea tx) throws IOException, FileNotFoundException {
+		final String content = tx.getText();
+		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads"+nm+".txt");
 		File f = new File(System.getProperty("user.home") + "/Downloads/" + nm + ".txt");
 	}
-	public static void open(String nm) throws IOException, FileNotFoundException{
-
-
-
-
+	public static JTextArea open(String nm) throws IOException, FileNotFoundException{
+		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads"+nm+".txt");
+		JTextArea txt = new JTextArea();
+		try{
+		txt.read(new BufferedReader(new FileReader(path.toString()), 0));
+		} catch(FileNotFoundException e){
+			System.out.println("Could not open file");
+			e.printStackTrace();
+		} catch(IOException e){
+			System.out.println("Could not open file");
+			e.printStackTrace();
+		}
+		return txt;
 	}
 
-}
-
-interface Toggleable{
-	boolean toggled = false;
-	public void toggleThis();
 }
