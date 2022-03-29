@@ -1,3 +1,4 @@
+import java.awt.Desktop;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
@@ -61,7 +62,7 @@ class WriteALot implements ActionListener {
 			{ 
 				String ObjButtons[] = {"Yes","No"};
 				int PromptResult = JOptionPane.showOptionDialog(null, 
-						"Do you want to save changes?", "Online Examination System", 
+						"Do you want to save changes?", "WriteALot", 
 						JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
 						ObjButtons,ObjButtons[1]);
 				if(PromptResult==0)
@@ -91,7 +92,7 @@ class WriteALot implements ActionListener {
 	
 	public void display(){
 		txtarea.setBounds(0, 25, frm.getWidth(), frm.getHeight());
-mnubr.setBounds(5, 0, (frm.getWidth()-5), 25);
+		mnubr.setBounds(5, 0, (frm.getWidth()-5), 25);
 	}
 
 	public void actionPerformed(ActionEvent ae) {
@@ -119,6 +120,7 @@ mnubr.setBounds(5, 0, (frm.getWidth()-5), 25);
 				frm.remove(txtarea);
 				txtarea = FileManage.open("testFile");
 				frm.add(txtarea);
+				txtarea.update(txtarea.getGraphics());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -134,28 +136,48 @@ abstract class FileManage {
 	public static void save(String nm, JTextArea tx) throws IOException, FileNotFoundException {
 
 		final String content = tx.getText();
-		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads"+nm+".txt");
+		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads/"+nm+".txt");
 		try (
 				final BufferedWriter writer = Files.newBufferedWriter(path,
 					StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 		    ) {
+			PrintWriter printer = new PrintWriter(path.toString());
+			//printer.print("");
+			printer.close();
 			writer.write(content);
 			writer.flush();
 		    }
 		catch(FileNotFoundException e) {
-			File f = new File(path.toString());
+			File f = path.toFile();
 		}
 	}
 	public static void saveAs(String nm, JTextArea tx) throws IOException, FileNotFoundException {
+		int itr = 0;
+		boolean exists = true;
 		final String content = tx.getText();
-		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads"+nm+".txt");
-		File f = new File(System.getProperty("user.home") + "/Downloads/" + nm + ".txt");
+		Path path;
+		
+		while(exists) {
+		path = Paths.get(System.getProperty("user.home")+"/Downloads/"+nm+"("+(itr+1)+").txt");
+		try (final BufferedWriter writer = Files.newBufferedWriter(path,
+				StandardCharsets.UTF_8, StandardOpenOption.CREATE);){
+			writer.write(content);
+			writer.flush();
+			exists = false;
+		}
+		catch(FileAlreadyExistsException e){
+		itr++;
+		continue;
+		}
+		
+		}
 	}
 	public static JTextArea open(String nm) throws IOException, FileNotFoundException{
-		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads"+nm+".txt");
+		Desktop desk = Desktop.getDesktop();
+		final Path path = Paths.get(System.getProperty("user.home")+"/Downloads/"+nm+".txt");
 		JTextArea txt = new JTextArea();
 		try{
-		txt.read(new BufferedReader(new FileReader(path.toString()), 0));
+		txt.read(new BufferedReader(new FileReader(path.toString()), 1),1);
 		} catch(FileNotFoundException e){
 			System.out.println("Could not open file");
 			e.printStackTrace();
