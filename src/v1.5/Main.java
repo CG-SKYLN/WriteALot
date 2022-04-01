@@ -237,12 +237,12 @@ class FileManage {
     public int isSaved(JTextArea ctxt) {
         newtxt = ctxt.getText();
         return ((newtxt == "\n" || newtxt == "" || newtxt == null)?
-        			0:
-        		(oldtxt == "\n" || oldtxt == "" || oldtxt == null)?
-        			2:
-        		(oldtxt == newtxt)?
-        			1:
-        		0);
+			0:
+		(oldtxt == "\n" || oldtxt == "" || oldtxt == null)?
+			2:	
+		(oldtxt == newtxt)?
+			1:
+			0);
     }
 
 }
